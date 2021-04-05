@@ -12,6 +12,7 @@ const initialState = {
 const App = () => {
   const [contacts, setContacts] = useState(initialState.contacts);
   const [selectedContact, setSelectedContact] = useState({});
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     setContacts([...data]);
@@ -37,6 +38,10 @@ const App = () => {
     setContacts((contacts) => contacts.filter((c) => c.id !== id));
   };
 
+  const updateFilter = ({target}) => {
+    setFilter(target.value);
+  };
+
   const value = useMemo(() => ({deleteContact, selectContactForEdit}), []);
 
   return (
@@ -45,7 +50,13 @@ const App = () => {
         <h2>Contacts List</h2>
         <div className="row mb-3 d-flex justify-content-between">
           <div className="col-4 p-0">
-            <input type="text" placeholder="Search" className="form-control" />
+            <input
+              type="text"
+              value={filter}
+              onChange={updateFilter}
+              placeholder="Search"
+              className="form-control"
+            />
           </div>
           <button className="btn btn-primary col-3">
             <i className="bi bi-person-plus" />
@@ -56,7 +67,11 @@ const App = () => {
           saveContact={saveContact}
           selectedContact={selectedContact}
         />
-        <ContactsList contacts={contacts} />
+        <ContactsList
+          contacts={contacts.filter((contact) =>
+            contact.name.toLowerCase().includes(filter.toLowerCase())
+          )}
+        />
       </div>
     </ContactContext.Provider>
   );
