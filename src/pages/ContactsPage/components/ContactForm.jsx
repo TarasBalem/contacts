@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import PropTypes from "prop-types";
 
-const ContactForm = ({saveContact, selectedContact}) => {
+const ContactForm = ({saveContact, selectedContact, closeForm}) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,6 +21,7 @@ const ContactForm = ({saveContact, selectedContact}) => {
     e.preventDefault();
     saveContact(formData);
     setFormData({name: "", email: ""});
+    closeForm();
   };
 
   return (
@@ -32,6 +33,7 @@ const ContactForm = ({saveContact, selectedContact}) => {
       <button
         type="button"
         className="btn-close position-absolute top-0 end-0"
+        onClick={closeForm}
       ></button>
       <div className="mb-3">
         <label htmlFor="name" className="form-label">
