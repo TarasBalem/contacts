@@ -13,7 +13,7 @@ const ContactsPage = () => {
   const [contacts, setContacts] = useState(initialState.contacts);
   const [selectedContact, setSelectedContact] = useState({});
   const [filter, setFilter] = useState("");
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
 
   useEffect(() => {
     setContacts([...data]);

@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import PropTypes from "prop-types";
 import ImageLoader from "components/ImageLoader";
+import FormMessage from "components/FormMessage";
 
 const ContactForm = ({saveContact, selectedContact, closeForm}) => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
     phone: "",
     photo: "",
   });
+  const [errors, setErrors] = useState({});
 
   const photoRef = useRef();
 
@@ -26,15 +28,29 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
     }
   }, [selectedContact]);
 
+  const validate = (data) => {
+    const errors = {};
+    if (!data.name) errors.name = "Name cannot be blank";
+    if (!data.email) errors.email = "Email cannot be blank";
+    if (!data.phone) errors.phone = "Phone cannot be blank";
+    return errors;
+  };
+
   const handleChange = (e) => {
     setFormData({...formData, [e.target.name]: e.target.value});
+    setErrors({...errors, [e.target.name]: ""});
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    saveContact(formData);
-    setFormData({name: "", email: "", phone: "", photo: ""});
-    closeForm();
+    const errors = validate(formData);
+    setErrors(errors);
+
+    if (Object.keys(errors).length === 0) {
+      saveContact(formData);
+      setFormData({name: "", email: "", phone: "", photo: ""});
+      closeForm();
+    }
   };
 
   const {name, email, phone, photo} = formData;
@@ -66,8 +82,9 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
               value={name}
               onChange={handleChange}
               type="text"
-              className="form-control"
+              className={`form-control ${errors.name ? "is-invalid" : ""}`}
             />
+            {errors.name && <FormMessage>{errors.name}</FormMessage>}
           </div>
           <div className="mb-3">
             <label htmlFor="email" className="form-label">
@@ -79,8 +96,9 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
               value={email}
               onChange={handleChange}
               type="text"
-              className="form-control"
+              className={`form-control ${errors.email ? "is-invalid" : ""}`}
             />
+            {errors.email && <FormMessage>{errors.email}</FormMessage>}
           </div>
           <div className="mb-3">
             <label htmlFor="phone" className="form-label">
@@ -92,8 +110,9 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
               value={phone}
               onChange={handleChange}
               type="text"
-              className="form-control"
+              className={`form-control ${errors.phone ? "is-invalid" : ""}`}
             />
+            {errors.phone && <FormMessage>{errors.phone}</FormMessage>}
           </div>
           <div className="mb-3">
             <label htmlFor="photo" className="form-label">
