@@ -1,9 +1,10 @@
 import React, {useState, useEffect, useRef} from "react";
 import PropTypes from "prop-types";
+import {Link, Redirect} from "react-router-dom";
 import ImageLoader from "components/ImageLoader";
 import FormMessage from "components/FormMessage";
 
-const ContactForm = ({saveContact, selectedContact, closeForm}) => {
+const ContactForm = ({saveContact, selectedContact}) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,6 +12,7 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
     photo: "",
   });
   const [errors, setErrors] = useState({});
+  const [redirect, setRediredct] = useState(false);
 
   const photoRef = useRef();
 
@@ -25,6 +27,9 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
   useEffect(() => {
     if (selectedContact.id) {
       setFormData(selectedContact);
+    }
+    if (selectedContact.id && !selectedContact.photo) {
+      setFormData({...selectedContact, photo: ""});
     }
   }, [selectedContact]);
 
@@ -49,7 +54,7 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
     if (Object.keys(errors).length === 0) {
       saveContact(formData);
       setFormData({name: "", email: "", phone: "", photo: ""});
-      closeForm();
+      setRediredct(true);
     }
   };
 
@@ -57,11 +62,12 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
 
   return (
     <form onSubmit={handleSubmit} className="position-relative py-3">
-      <button
+      {redirect && <Redirect to="/contacts" />}
+      <Link
+        to="/contacts"
         type="button"
         className="btn-close position-absolute top-0 end-0"
-        onClick={closeForm}
-      ></button>
+      ></Link>
       <div className="row">
         <div className="col-4 d-flex align-items-center justify-content-center">
           <ImageLoader
