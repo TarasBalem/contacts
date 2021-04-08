@@ -8,7 +8,9 @@ const ContactItem = ({contact}) => {
 
   return (
     <div className="list-group-item row d-flex">
-      <div className="col-10">{contact.name}</div>
+      <Link to={`/contacts/contact/${contact.id}`} className="col-10">
+        {contact.name}
+      </Link>
       <div className="col-2 d-flex justify-content-end">
         <Link
           to={`/contacts/edit/${contact.id}`}

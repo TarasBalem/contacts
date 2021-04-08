@@ -1,9 +1,10 @@
 import React, {useState, useEffect, useMemo} from "react";
-import {Route, Link} from "react-router-dom";
+import {Route, Link, useHistory} from "react-router-dom";
 import {generate as id} from "shortid";
 import ContactContext from "contexts/ContactContext";
 import ContactsList from "pages/ContactsPage/components/ContactsList";
 import ContactForm from "pages/ContactsPage/components/ContactForm";
+import ContactCard from "pages/ContactsPage/components/ContactCard";
 import Filter from "components/Filter";
 import {contacts as data} from "data";
 
@@ -42,6 +43,17 @@ const ContactsPage = () => {
 
   return (
     <ContactContext.Provider value={value}>
+      <Route
+        path="/contacts/contact/:id"
+        render={({match}) => (
+          <ContactCard
+            selectedContact={contacts.find(
+              (c) => String(c.id) === match.params.id
+            )}
+          />
+        )}
+      />
+
       <Route path="/contacts/new">
         <ContactForm saveContact={saveContact} selectedContact={{}} />
       </Route>
