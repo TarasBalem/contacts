@@ -56,7 +56,7 @@ const ContactForm = ({saveContact, selectedContact, closeForm}) => {
   const {name, email, phone, photo} = formData;
 
   return (
-    <form onSubmit={handleSubmit} className="container position-relative py-3">
+    <form onSubmit={handleSubmit} className="position-relative py-3">
       <button
         type="button"
         className="btn-close position-absolute top-0 end-0"
