@@ -1,0 +1,25 @@
+{
+  "contacts": [
+    {
+      "id": "id-taras-111",
+      "email": "taras@com.ua",
+      "name": "Taras",
+      "phone": "0660000000",
+      "photo": "/img/jonathan-petit.jpg"
+    },
+    {
+      "id": "id-daria-111",
+      "email": "daria@com.ua",
+      "name": "Daria",
+      "phone": "0505555555",
+      "photo": "/img/agent-smith.jpg"
+    },
+    {
+      "id": "id-max-111",
+      "email": "max@com.ua",
+      "name": "Max",
+      "phone": "0951111111",
+      "photo": "/img/abdulaziz-mohammed.jpg"
+    }
+  ]
+}

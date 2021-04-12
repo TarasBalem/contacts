@@ -1,29 +1,35 @@
 import React, {useState, useEffect, useMemo} from "react";
-import {Route, Link, useHistory} from "react-router-dom";
+import {Route, Link} from "react-router-dom";
 import {generate as id} from "shortid";
 import ContactContext from "contexts/ContactContext";
 import ContactsList from "pages/ContactsPage/components/ContactsList";
 import ContactForm from "pages/ContactsPage/components/ContactForm";
 import ContactCard from "pages/ContactsPage/components/ContactCard";
 import Filter from "components/Filter";
-import {contacts as data} from "data";
+import api from "api";
 
 const initialState = {
   contacts: [],
 };
+
 const ContactsPage = () => {
   const [contacts, setContacts] = useState(initialState.contacts);
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    setContacts([...data]);
+    api.contacts
+      .fetchAll()
+      .then((fetchContacts) => setContacts(Object.values(fetchContacts)));
   }, []);
 
   const addContact = (contact) => {
-    setContacts([{id: id(), ...contact}, ...contacts]);
+    api.contacts
+      .create({id: id(), ...contact})
+      .then(setContacts([{id: id(), ...contact}, ...contacts]));
   };
 
   const updateContact = (contact) => {
+    api.contacts.update(contact);
     setContacts(contacts.map((c) => (c.id === contact.id ? contact : c)));
   };
 
@@ -31,8 +37,9 @@ const ContactsPage = () => {
     contact.id ? updateContact(contact) : addContact(contact);
   };
 
-  const deleteContact = (id) => {
-    setContacts((contacts) => contacts.filter((c) => c.id !== id));
+  const deleteContact = (contact) => {
+    api.contacts.delete(contact);
+    setContacts((contacts) => contacts.filter((c) => c.id !== contact.id));
   };
 
   const updateFilter = ({target}) => {
@@ -81,6 +88,7 @@ const ContactsPage = () => {
           </Link>
         </div>
         <ContactsList
+          // contacts={contacts}
           contacts={contacts.filter((contact) =>
             contact.name.toLowerCase().includes(filter.toLowerCase())
           )}

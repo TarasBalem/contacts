@@ -20,7 +20,7 @@ const ContactItem = ({contact}) => {
         </Link>
         <button
           className="btn btn-danger"
-          onClick={() => deleteContact(contact.id)}
+          onClick={() => deleteContact(contact)}
         >
           <i className="bi bi-trash" />
         </button>
