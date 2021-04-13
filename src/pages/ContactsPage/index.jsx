@@ -7,25 +7,33 @@ import ContactForm from "pages/ContactsPage/components/ContactForm";
 import ContactCard from "pages/ContactsPage/components/ContactCard";
 import Filter from "components/Filter";
 import api from "api";
-
-const initialState = {
-  contacts: [],
-};
+import Spinner from "components/Spinner";
+import ErrorMessage from "components/ErrorMessage";
 
 const ContactsPage = () => {
-  const [contacts, setContacts] = useState(initialState.contacts);
+  const [contacts, setContacts] = useState([]);
   const [filter, setFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState("");
 
   useEffect(() => {
     api.contacts
       .fetchAll()
-      .then((fetchContacts) => setContacts(Object.values(fetchContacts)));
+      .then((fetchContacts) => setContacts(Object.values(fetchContacts)))
+      .catch((error) => {
+        setErrors(error);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const addContact = (contact) => {
     api.contacts
       .create({id: id(), ...contact})
-      .then(setContacts([{id: id(), ...contact}, ...contacts]));
+      .then(() => setContacts([...contacts, {id: id(), ...contact}]))
+      .catch((error) => {
+        setErrors(error);
+      })
+      .finally(() => setLoading(false));
   };
 
   const updateContact = (contact) => {
@@ -87,12 +95,18 @@ const ContactsPage = () => {
             <i className="bi bi-person-plus" /> Add contact
           </Link>
         </div>
-        <ContactsList
-          // contacts={contacts}
-          contacts={contacts.filter((contact) =>
-            contact.name.toLowerCase().includes(filter.toLowerCase())
-          )}
-        />
+
+        {errors ? <ErrorMessage>{`${errors}`}</ErrorMessage> : null}
+
+        {loading ? (
+          <Spinner />
+        ) : (
+          <ContactsList
+            contacts={contacts.filter((contact) =>
+              contact.name.toLowerCase().includes(filter.toLowerCase())
+            )}
+          />
+        )}
       </Route>
     </ContactContext.Provider>
   );

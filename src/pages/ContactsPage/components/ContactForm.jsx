@@ -12,6 +12,7 @@ const ContactForm = ({saveContact, selectedContact}) => {
     photo: "",
   });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [redirect, setRediredct] = useState(false);
 
   const photoRef = useRef();
@@ -50,10 +51,13 @@ const ContactForm = ({saveContact, selectedContact}) => {
     e.preventDefault();
     const errors = validate(formData);
     setErrors(errors);
+    setLoading(true);
 
     if (Object.keys(errors).length === 0) {
       saveContact(formData);
       setFormData({name: "", email: "", phone: "", photo: ""});
+      setLoading(false);
+      setErrors({});
       setRediredct(true);
     }
   };
@@ -133,7 +137,9 @@ const ContactForm = ({saveContact, selectedContact}) => {
               type="file"
             />
           </div>
-          <button className="btn btn-primary">Done</button>
+          <button className={`btn btn-primary ${loading ? "disabled" : ""}`}>
+            Done
+          </button>
         </div>
       </div>
     </form>
