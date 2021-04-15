@@ -6,9 +6,10 @@ import ContactsList from "pages/ContactsPage/components/ContactsList";
 import ContactForm from "pages/ContactsPage/components/ContactForm";
 import ContactCard from "pages/ContactsPage/components/ContactCard";
 import Filter from "components/Filter";
-import api from "api";
 import Spinner from "components/Spinner";
 import ErrorMessage from "components/ErrorMessage";
+import api from "api";
+import {sleep} from "utils";
 
 const ContactsPage = () => {
   const [contacts, setContacts] = useState([]);
@@ -19,7 +20,13 @@ const ContactsPage = () => {
   useEffect(() => {
     api.contacts
       .fetchAll()
-      .then((fetchContacts) => setContacts(Object.values(fetchContacts)))
+      .then((snapshot) => {
+        const fetchContacts = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setContacts(fetchContacts);
+      })
       .catch((error) => {
         setErrors(error);
       })
@@ -27,9 +34,10 @@ const ContactsPage = () => {
   }, []);
 
   const addContact = (contact) => {
+    setLoading(true);
     api.contacts
-      .create({id: id(), ...contact})
-      .then(() => setContacts([...contacts, {id: id(), ...contact}]))
+      .create(contact)
+      .then((docRef) => setContacts([...contacts, {id: docRef.id, ...contact}]))
       .catch((error) => {
         setErrors(error);
       })
@@ -37,8 +45,16 @@ const ContactsPage = () => {
   };
 
   const updateContact = (contact) => {
-    api.contacts.update(contact);
-    setContacts(contacts.map((c) => (c.id === contact.id ? contact : c)));
+    setLoading(true);
+    api.contacts
+      .update(contact)
+      .then(() =>
+        setContacts(contacts.map((c) => (c.id === contact.id ? contact : c)))
+      )
+      .catch((error) => {
+        setErrors(error);
+      })
+      .finally(() => setLoading(false));
   };
 
   const saveContact = (contact) => {
@@ -46,8 +62,15 @@ const ContactsPage = () => {
   };
 
   const deleteContact = (contact) => {
-    api.contacts.delete(contact);
-    setContacts((contacts) => contacts.filter((c) => c.id !== contact.id));
+    api.contacts
+      .delete(contact.id)
+      .then(() => {
+        setContacts((contacts) => contacts.filter((c) => c.id !== contact.id));
+      })
+      .catch((error) => {
+        setErrors(error);
+      })
+      .finally(() => setLoading(false));
   };
 
   const updateFilter = ({target}) => {
@@ -62,9 +85,7 @@ const ContactsPage = () => {
         path="/contacts/contact/:id"
         render={({match}) => (
           <ContactCard
-            selectedContact={contacts.find(
-              (c) => String(c.id) === match.params.id
-            )}
+            selectedContact={contacts.find((c) => c.id === match.params.id)}
           />
         )}
       />
@@ -80,7 +101,7 @@ const ContactsPage = () => {
             <ContactForm
               saveContact={saveContact}
               selectedContact={
-                contacts.find((c) => String(c.id) === match.params.id) || {}
+                contacts.find((c) => c.id === match.params.id) || {}
               }
             />
           );
