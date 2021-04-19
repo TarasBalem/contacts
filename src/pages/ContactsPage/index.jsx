@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useMemo} from "react";
 import {Route, Link} from "react-router-dom";
-import {generate as id} from "shortid";
 import ContactContext from "contexts/ContactContext";
 import ContactsList from "pages/ContactsPage/components/ContactsList";
 import ContactForm from "pages/ContactsPage/components/ContactForm";
@@ -9,7 +8,6 @@ import Filter from "components/Filter";
 import Spinner from "components/Spinner";
 import ErrorMessage from "components/ErrorMessage";
 import api from "api";
-import {sleep} from "utils";
 
 const ContactsPage = () => {
   const [contacts, setContacts] = useState([]);

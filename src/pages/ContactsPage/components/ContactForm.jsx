@@ -46,7 +46,7 @@ const ContactForm = ({saveContact, selectedContact}) => {
     setErrors({...errors, [e.target.name]: ""});
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const errors = validate(formData);
     setErrors(errors);
