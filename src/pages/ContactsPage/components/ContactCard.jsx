@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import {Link} from "react-router-dom";
 
-const ContactCard = ({selectedContact, closeForm}) => {
+const ContactCard = ({selectedContact}) => {
   const {name, email, phone, photo} = selectedContact;
   return (
     <div className="row card mb-3">
