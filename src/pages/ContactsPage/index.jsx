@@ -1,6 +1,7 @@
-import React, {useState, useEffect, useMemo} from "react";
-import {Route, Link} from "react-router-dom";
+import React, {useState, useEffect, useMemo, useContext} from "react";
+import {Route, Link, Redirect} from "react-router-dom";
 import ContactContext from "contexts/ContactContext";
+import UserContext from "contexts/UserContext";
 import ContactsList from "pages/ContactsPage/components/ContactsList";
 import ContactForm from "pages/ContactsPage/components/ContactForm";
 import ContactCard from "pages/ContactsPage/components/ContactCard";
@@ -14,6 +15,7 @@ const ContactsPage = () => {
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState("");
+  const {userAuth} = useContext(UserContext);
 
   useEffect(() => {
     api.contacts
@@ -87,32 +89,39 @@ const ContactsPage = () => {
           />
         )}
       />
+      {!!userAuth.id ? (
+        <>
+          <Route path="/contacts/new">
+            <ContactForm saveContact={saveContact} selectedContact={{}} />
+          </Route>
 
-      <Route path="/contacts/new">
-        <ContactForm saveContact={saveContact} selectedContact={{}} />
-      </Route>
-
-      <Route
-        path="/contacts/edit/:id"
-        render={({match}) => {
-          return (
-            <ContactForm
-              saveContact={saveContact}
-              selectedContact={
-                contacts.find((c) => c.id === match.params.id) || {}
-              }
-            />
-          );
-        }}
-      />
+          <Route
+            path="/contacts/edit/:id"
+            render={({match}) => {
+              return (
+                <ContactForm
+                  saveContact={saveContact}
+                  selectedContact={
+                    contacts.find((c) => c.id === match.params.id) || {}
+                  }
+                />
+              );
+            }}
+          />
+        </>
+      ) : (
+        <Redirect to="/contacts" />
+      )}
 
       <Route exact path="/contacts">
         <h2>Contacts List</h2>
         <div className="row mb-3 d-flex justify-content-between">
           <Filter filter={filter} updateFilter={updateFilter} />
-          <Link to="/contacts/new" className="btn btn-primary col-3">
-            <i className="bi bi-person-plus" /> Add contact
-          </Link>
+          {!!userAuth.id && (
+            <Link to="/contacts/new" className="btn btn-primary col-3">
+              <i className="bi bi-person-plus" /> Add contact
+            </Link>
+          )}
         </div>
 
         {errors ? <ErrorMessage>{`${errors}`}</ErrorMessage> : null}

@@ -4,6 +4,7 @@ import Navigation from "components/Navigation";
 import Spinner from "components/Spinner";
 import HomePage from "pages/HomePage";
 import api, {getAuthUser} from "api";
+import UserContext from "contexts/UserContext";
 
 const ContactsPage = lazy(() => import("pages/ContactsPage"));
 const LoginPage = lazy(() => import("pages/LoginPage"));
@@ -11,7 +12,7 @@ const SignupPage = lazy(() => import("pages/SignupPage"));
 const PageNotFound = lazy(() => import("components/PageNotFound"));
 
 const App = () => {
-  const [user, setUser] = useState({
+  const [userAuth, setUserAuth] = useState({
     id: null,
     email: null,
   });
@@ -19,12 +20,12 @@ const App = () => {
   useEffect(() => {
     if (localStorage.userUid) {
       let user = JSON.parse(localStorage.userUid);
-      setUser({id: user.uid, email: user.email});
+      setUserAuth({id: user.uid, email: user.email});
     }
   }, []);
 
   const loginApp = (currentUser) => {
-    setUser({...user, email: currentUser.email, id: currentUser.uid});
+    setUserAuth({...userAuth, email: currentUser.email, id: currentUser.uid});
     localStorage.userUid = JSON.stringify(currentUser);
     getAuthUser(currentUser);
   };
@@ -34,7 +35,7 @@ const App = () => {
       .logout()
       .then(() => {
         console.log("Logout Success");
-        setUser({...user, email: null, id: null});
+        setUserAuth({...userAuth, email: null, id: null});
         delete localStorage.userUid;
       })
       .catch((error) => {
@@ -44,26 +45,28 @@ const App = () => {
 
   return (
     <Suspense fallback={<Spinner />}>
-      <div className="container">
-        <Navigation logout={logout} user={user} />
-        <Switch>
-          <Route path="/" exact>
-            <HomePage />
-          </Route>
-          <Route path="/contacts">
-            <ContactsPage />
-          </Route>
-          <Route path="/login">
-            <LoginPage loginApp={loginApp} />
-          </Route>
-          <Route path="/signup">
-            <SignupPage loginApp={loginApp} />
-          </Route>
-          <Route default>
-            <PageNotFound />
-          </Route>
-        </Switch>
-      </div>
+      <UserContext.Provider value={{userAuth}}>
+        <div className="container">
+          <Navigation logout={logout} />
+          <Switch>
+            <Route path="/" exact>
+              <HomePage />
+            </Route>
+            <Route path="/contacts">
+              <ContactsPage />
+            </Route>
+            <Route path="/login">
+              <LoginPage loginApp={loginApp} />
+            </Route>
+            <Route path="/signup">
+              <SignupPage loginApp={loginApp} />
+            </Route>
+            <Route default>
+              <PageNotFound />
+            </Route>
+          </Switch>
+        </div>
+      </UserContext.Provider>
     </Suspense>
   );
 };

@@ -1,8 +1,11 @@
-import React from "react";
+import React, {useContext} from "react";
 import PropTypes from "prop-types";
 import {NavLink} from "react-router-dom";
+import UserContext from "contexts/UserContext";
 
-const Navigation = ({logout, user}) => {
+const Navigation = ({logout}) => {
+  const {userAuth} = useContext(UserContext);
+
   return (
     <div className="row pb-3">
       <nav className="nav d-flex bd-highlight pe-0">
@@ -13,9 +16,9 @@ const Navigation = ({logout, user}) => {
           <i className="bi bi-people" /> Contacts
         </NavLink>
         <div className="ms-auto bd-highlight d-flex">
-          {!!user.id ? (
+          {!!userAuth.id ? (
             <>
-              <div className="nav-link disabled">{user.email}</div>
+              <div className="nav-link disabled">{userAuth.email}</div>
               <span onClick={logout} className="nav-link">
                 <i className="bi bi-box-arrow-left" /> Logout
               </span>
